@@ -18,7 +18,7 @@ Installation
 To uninstall
 
 ``` powershell
-c:\zabbix\bin\zabbix_agentd.exe --stop --config c:\zabbix\conf\zabbix_agentd.conf
+c:\zabbix-agent\bin\zabbix_agentd.exe --stop --config c:\zabbix-agent\conf\zabbix_agentd.conf
 
-c:\zabbix\bin\zabbix_agentd.exe --uninstall --config c:\zabbix\conf\zabbix_agentd.conf
+c:\zabbix-agent\bin\zabbix_agentd.exe --uninstall --config c:\zabbix-agent\conf\zabbix_agentd.conf
 ```
