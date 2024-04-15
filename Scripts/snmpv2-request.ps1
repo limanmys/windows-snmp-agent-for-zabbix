@@ -5,6 +5,6 @@ param (
 )
 
 $result = snmpwalk -v2c -c $community $ipAddress $oid
-$result = $result -replace '.*STRING:\s*'
+$response = $result -replace '.*STRING:\s*'
 
-Write-Output $result
+Write-Output $response
