@@ -9,6 +9,11 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
 ```
 Note: Reply Y for one time, A for all time
 
+Windows Fİrewall Rule
+``` powershell
+New-NetFirewallRule -DisplayName "Zabbix Agent" -Direction Inbound -LocalPort 10050 -Protocol TCP -Action Allow
+```
+
 Installation
 ```powershel
 ./zabbix-agent-v1.ps1
