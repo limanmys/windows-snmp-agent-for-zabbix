@@ -31,7 +31,9 @@ c:\zabbix-agent\bin\zabbix_agentd.exe --uninstall --config c:\zabbix-agent\conf\
 
 
 
-**One line command**
+**One Line Installation**
+
+Downloads, adds firewall rule and installs Zabbix Agnet 
 ``` powershell
-PowerShell -ExecutionPolicy RemoteSigned -Command "Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force; & ./zabbix-agent-v1.ps1"
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force; Invoke-WebRequest -Uri "https://raw.githubusercontent.com/dogukaneren/Zabbix-Agent-Slient-Installer/main/zabbix-agent-v1-plus.ps1" -OutFile "zabbix-agent-v1-plus.ps1"; .\zabbix-agent-v1-plus.ps1
 ```
