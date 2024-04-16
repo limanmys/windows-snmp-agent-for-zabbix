@@ -1,29 +1,24 @@
-#Definitions
-
 $server = "<your-ip-address>"
 
 #Download address definitions
-
 $version = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.28/zabbix_agent-6.0.28-windows-amd64-openssl.zip"
 $vRedistInstallerUrl = "https://aka.ms/vs/16/release/vc_redist.x64.exe"
 
 #Script path definitions
-
 $ping = "https://github.com/limanmys/zabbix-agent-slient/blob/main/Scripts/ping-request.ps1"
 $snmpv2 = "https://github.com/limanmys/zabbix-agent-slient/blob/main/Scripts/snmpv2-request.ps1"
 $snmpv3 = "https://github.com/limanmys/zabbix-agent-slient/blob/main/Scripts/snmpv3-request.ps1"
 
-New-Item -Path "C:\zabbix-agent\Scripts" -ItemType Directory -Force
+# Create directory for scripts
+New-Item -Path "C:\Program Files\zabbix-agent\Scripts" -ItemType Directory -Force
 
+# vc_redist.x64 installation
+Invoke-WebRequest -Uri $vRedistInstallerUrl -OutFile "C:\Program Files\zabbix-agent\vc_redist.x64.exe"
+Start-Process -FilePath "C:\Program Files\zabbix-agent\vc_redist.x64.exe" -ArgumentList "/quiet", "/norestart" -Wait
 
-#vc_redist.x64 installation
-
-Invoke-WebRequest -Uri $vRedistInstallerUrl -outfile c:\zabbix-agent\vc_redist.x64.exe
-c:\zabbix-agent\vc_redist.x64.exe /quiet /norestart
-
-#Zabbix Agnet installation
-
-Invoke-WebRequest "$version" -outfile c:\zabbix-agent\zabbix.zip
+# Zabbix Agent installation
+Invoke-WebRequest -Uri $version -OutFile "C:\Program Files\zabbix-agent\zabbix.zip"
+Expand-Archive -Path "C:\Program Files\zabbix-agent\zabbix.zip" -DestinationPath "C:\Program Files\zabbix-agent"
 
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 function Unzip
@@ -33,24 +28,31 @@ function Unzip
     [System.IO.Compression.ZipFile]::ExtractToDirectory($zipfile, $outpath)
 }
 
-Unzip "c:\Zabbix-agent\zabbix.zip" "c:\zabbix-agent" 
+Unzip "C:\Program Files\zabbix-agent\zabbix.zip" "C:\Program Files\zabbix-agent"
 
-Invoke-WebRequest -Uri $snmpv2 -outfile c:\zabbix-agent\Scripts\ping.ps1
-Invoke-WebRequest -Uri $snmpv2 -outfile c:\zabbix-agent\Scripts\snmpv2-request.ps1
-Invoke-WebRequest -Uri $snmpv3 -outfile c:\zabbix-agent\Scripts\snmpv3-request.ps1
 
-(Get-Content -Path c:\zabbix-agent\conf\zabbix_agentd.conf) | ForEach-Object {$_ -Replace '127.0.0.1', "$server"} | Set-Content -Path c:\zabbix-agent\conf\zabbix_agentd.conf
+# Download scripts
+Invoke-WebRequest -Uri $ping -OutFile "C:\Program Files\zabbix-agent\Scripts\ping-request.ps1"
+Invoke-WebRequest -Uri $snmpv2 -OutFile "C:\Program Files\zabbix-agent\Scripts\snmpv2-request.ps1"
+Invoke-WebRequest -Uri $snmpv3 -OutFile "C:\Program Files\zabbix-agent\Scripts\snmpv3-request.ps1"
 
+
+# Update zabbix_agentd.conf
+(Get-Content -Path "C:\Program Files\zabbix-agent\conf\zabbix_agentd.conf") |
+    ForEach-Object { $_ -Replace '127.0.0.1', "$server" } |
+    Set-Content -Path "C:\Program Files\zabbix-agent\conf\zabbix_agentd.conf"
+    
 $linesToAdd = @"
-UserParameter=deren.ping[*],powershell.exe -File "C:\Program Files\Zabbix Agent\Scripts\ping.ps1" $1
-UserParameter=deren.ping[*],powershell.exe -File "C:\Program Files\Zabbix Agent\Scripts\snmpv2-request.ps1" $1 $2 $3
-UserParameter=deren.snmp[*],powershell.exe -File "C:\Program Files\Zabbix Agent\Scripts\snmpv3-request.ps1" $1 $2 $3 $4 $5 $6 $7
+UserParameter=deren.ping[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\ping-request.ps1" $1
+UserParameter=deren.snmp[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\snmpv2-request.ps1" $1 $2 $3
+UserParameter=deren.snmp[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\snmpv3-request.ps1" $1 $2 $3 $4 $5 $6 $7
 "@
 
-Add-Content -Path "c:\zabbix-agent\conf\zabbix_agentd.conf" -Value $linesToAdd
+Add-Content -Path "C:\Program Files\zabbix-agent\conf\zabbix_agentd.conf" -Value $linesToAdd
 
-C:\zabbix-agent\bin\zabbix_agentd.exe --config c:\zabbix-agent\conf\zabbix_agentd.conf --install
+# Install and start Zabbix Agent
+Start-Process -FilePath "C:\Program Files\zabbix-agent\bin\zabbix_agentd.exe" -ArgumentList "--config", "C:\Program Files\zabbix-agent\conf\zabbix_agentd.conf", "--install" -Wait
+New-NetFirewallRule -DisplayName "Zabbix Agent Rule" -Direction Inbound -LocalPort 10050 -Protocol TCP -Action Allow
 
-New-NetFirewallRule -DisplayName "Zabbix Agent" -Direction Inbound -LocalPort 10050 -Protocol TCP -Action Allow
+& "C:\Program Files\zabbix-agent\bin\zabbix_agentd.exe" --start --config "C:\Program Files\zabbix-agent\conf\zabbix_agentd.conf"
 
-c:\zabbix-agent\bin\zabbix_agentd.exe --start --config C:\zabbix-agent\conf\zabbix_agentd.conf
