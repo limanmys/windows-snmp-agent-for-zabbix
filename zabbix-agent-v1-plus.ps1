@@ -1,4 +1,4 @@
-$server = "<your-ip-address>"
+$server = "<your-zabbix-server-ip-address>"
 
 #Download address definitions
 $version = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.28/zabbix_agent-6.0.28-windows-amd64-openssl.zip"
@@ -38,9 +38,8 @@ Invoke-WebRequest -Uri $snmpv3 -OutFile "C:\Program Files\zabbix-agent\Scripts\s
 
 
 # Update zabbix_agentd.conf
-(Get-Content -Path "C:\Program Files\zabbix-agent\conf\zabbix_agentd.conf") |
-    ForEach-Object { $_ -Replace '127.0.0.1', "$server" } |
-    Set-Content -Path "C:\Program Files\zabbix-agent\conf\zabbix_agentd.conf"
+(Get-Content -Path "c:\Program Files\zabbix-agent\conf\zabbix_agentd.conf") | ForEach-Object {$_ -Replace '127.0.0.1', "$server"} | Set-Content -Path "c:\Program Files\zabbix-agent\conf\zabbix_agentd.conf"
+
     
 $linesToAdd = @"
 UserParameter=deren.ping[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\ping-request.ps1" $1
@@ -51,8 +50,7 @@ UserParameter=deren.snmp[*],powershell.exe -File "C:\Program Files\zabbix-agent\
 Add-Content -Path "C:\Program Files\zabbix-agent\conf\zabbix_agentd.conf" -Value $linesToAdd
 
 # Install and start Zabbix Agent
-Start-Process -FilePath "C:\Program Files\zabbix-agent\bin\zabbix_agentd.exe" -ArgumentList "--config", "C:\Program Files\zabbix-agent\conf\zabbix_agentd.conf", "--install" -Wait
+& "C:\Program Files\zabbix-agent\bin\zabbix_agentd.exe" --config "c:\Program Fİles\zabbix-agent\conf\zabbix_agentd.conf" --install
 New-NetFirewallRule -DisplayName "Zabbix Agent Rule" -Direction Inbound -LocalPort 10050 -Protocol TCP -Action Allow
 
 & "C:\Program Files\zabbix-agent\bin\zabbix_agentd.exe" --start --config "C:\Program Files\zabbix-agent\conf\zabbix_agentd.conf"
-
