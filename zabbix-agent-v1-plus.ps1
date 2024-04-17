@@ -45,6 +45,8 @@ $linesToAdd = @"
 UserParameter=deren.ping[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\ping-request.ps1" $1
 UserParameter=deren.snmp[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\snmpv2-request.ps1" $1 $2 $3
 UserParameter=deren.snmpv3[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\snmpv3-request.ps1" $1 $2 $3 $4 $5 $6 $7
+
+EnableRemoteCommands=1
 "@
 
 Add-Content -Path "C:\Program Files\zabbix-agent\conf\zabbix_agentd.conf" -Value $linesToAdd
