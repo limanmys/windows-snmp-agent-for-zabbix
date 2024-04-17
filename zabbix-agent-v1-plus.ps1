@@ -5,9 +5,9 @@ $version = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.28/zabbix_agen
 $vRedistInstallerUrl = "https://aka.ms/vs/16/release/vc_redist.x64.exe"
 
 #Script path definitions
-$ping = "https://github.com/limanmys/zabbix-agent-slient/blob/main/Scripts/ping-request.ps1"
-$snmpv2 = "https://github.com/limanmys/zabbix-agent-slient/blob/main/Scripts/snmpv2-request.ps1"
-$snmpv3 = "https://github.com/limanmys/zabbix-agent-slient/blob/main/Scripts/snmpv3-request.ps1"
+$ping = "https://raw.githubusercontent.com/limanmys/zabbix-agent-slient/main/Scripts/ping-request.ps1"
+$snmpv2 = "https://raw.githubusercontent.com/limanmys/zabbix-agent-slient/main/Scripts/snmpv2-request.ps1"
+$snmpv3 = "https://raw.githubusercontent.com/limanmys/zabbix-agent-slient/main/Scripts/snmpv3-request.ps1"
 
 # Create directory for scripts
 New-Item -Path "C:\Program Files\zabbix-agent\Scripts" -ItemType Directory -Force
