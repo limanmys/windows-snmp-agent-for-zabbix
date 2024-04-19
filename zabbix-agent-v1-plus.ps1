@@ -14,7 +14,7 @@ if ($server -eq "<your-zabbix-server-ip-address>") {
 #Download address definitions
 $version = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.28/zabbix_agent-6.0.28-windows-amd64-openssl.zip"
 $vRedistInstallerUrl = "https://aka.ms/vs/16/release/vc_redist.x64.exe"
-$snmpwalk=
+$snmpwalkDownloadUrl = "https://github.com/limanmys/zabbix-agent-slient/releases/download/snmp/snmpwalk.exe"
 #Script path definitions
 $ping = "https://raw.githubusercontent.com/limanmys/zabbix-agent-slient/main/Scripts/ping-request.ps1"
 $snmpv2 = "https://raw.githubusercontent.com/limanmys/zabbix-agent-slient/main/Scripts/snmpv2-request.ps1"
@@ -97,7 +97,6 @@ if (-not (Test-Path -Path $zabbixAgentDirectory)) {
     New-Item -ItemType Directory -Path $zabbixAgentDirectory | Out-Null
 }
 
-$snmpwalkDownloadUrl = "https://github.com/limanmys/zabbix-agent-slient/releases/download/snmp/snmpwalk.exe"
 $snmpwalkFilePath = "$zabbixAgentDirectory\snmpwalk.exe"
 
 if (-not (Test-Path -Path $snmpwalkFilePath)) {
