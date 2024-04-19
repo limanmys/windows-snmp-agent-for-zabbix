@@ -74,3 +74,32 @@ Set-Content -Path "$zabbixAgentDirectory\conf\zabbix_agentd.conf" -Value $linesT
 New-NetFirewallRule -DisplayName "Zabbix Agent Rule" -Direction Inbound -LocalPort 10050 -Protocol TCP -Action Allow
 
 & "$zabbixAgentDirectory\bin\zabbix_agentd.exe" --start --config "$zabbixAgentDirectory\conf\zabbix_agentd.conf"
+
+# Install snmpwalk
+
+$currentPath = [Environment]::GetEnvironmentVariable("Path", "Machine")
+
+$snmpwalkDirectory = "$zabbixAgentDirectory"
+
+if (-not (Test-Path -Path $zabbixAgentDirectory)) {
+    New-Item -ItemType Directory -Path $zabbixAgentDirectory | Out-Null
+}
+
+$snmpwalkDownloadUrl = "https://github.com/limanmys/zabbix-agent-slient/releases/download/snmp/snmpwalk.exe"
+$snmpwalkFilePath = "$zabbixAgentDirectory\snmpwalk.exe"
+
+if (-not (Test-Path -Path $snmpwalkFilePath)) {
+    Invoke-WebRequest -Uri $snmpwalkDownloadUrl -OutFile $snmpwalkFilePath
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "Failed to download snmpwalk.exe. Exiting."
+        exit 1
+    }
+}
+
+if ($currentPath -notlike "*$snmpwalkDirectory*") {
+    [Environment]::SetEnvironmentVariable("Path", "$currentPath;$snmpwalkDirectory", "Machine")
+
+    Write-Host "Directory added to PATH. You can now use 'snmpwalk' command."
+} else {
+    Write-Host "Directory is already in PATH."
+}
