@@ -13,6 +13,7 @@ $zabbixAgentDirectory = "C:\Program Files\zabbix-agent"
 
 # Create directory for scripts
 New-Item -Path "$zabbixAgentDirectory\Scripts" -ItemType Directory -Force
+New-Item -Path "$zabbixAgentDirectory\Logs" -ItemType Directory -Force
 
 # vc_redist.x64 installation
 Invoke-WebRequest -Uri $vRedistInstallerUrl -OutFile "$zabbixAgentDirectory\vc_redist.x64.exe"
@@ -40,16 +41,33 @@ Invoke-WebRequest -Uri $snmpv3 -OutFile "$zabbixAgentDirectory\Scripts\snmpv3-re
 
 
 # Update zabbix_agentd.conf
-(Get-Content -Path "$zabbixAgentDirectory\conf\zabbix_agentd.conf") | ForEach-Object {$_ -Replace '127.0.0.1', "$server"} | Set-Content -Path "$zabbixAgentDirectory\conf\zabbix_agentd.conf"
-
     
 $linesToAdd = @'
+LogFile=C:\Program Files\zabbix-agent\Logs\zabbix_agentd.log
+
+LogFile=C:\Program Files\zabbix-agent\Logs\zabbix_agentd.log
+LogFileSize=1
+DebugLevel=3
+
+Server=<your-ip>
+
+ServerActive=<your-ip>
+
+Hostname=Windows host
+
+RefreshActiveChecks=120
+BufferSend=5
+BufferSize=100
+MaxLinesPerSecond=20
+
 UserParameter=deren.ping[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\ping-request.ps1" $1
 UserParameter=deren.snmp[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\snmpv2-request.ps1" $1 $2 $3
 UserParameter=deren.snmpv3[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\snmpv3-request.ps1" $1 $2 $3 $4 $5 $6 $7
 '@
 
-Add-Content -Path "$zabbixAgentDirectoryconf\zabbix_agentd.conf" -Value $linesToAdd
+Set-Content -Path "$zabbixAgentDirectory\conf\zabbix_agentd.conf" -Value $linesToAdd
+(Get-Content -Path "$zabbixAgentDirectory\conf\zabbix_agentd.conf") | ForEach-Object {$_ -Replace '<your-ip>', "$server"} | Set-Content -Path "$zabbixAgentDirectory\conf\zabbix_agentd.conf"
+
 
 # Install and start Zabbix Agent
 & "$zabbixAgentDirectory\bin\zabbix_agentd.exe" --config "$zabbixAgentDirectory\conf\zabbix_agentd.conf" --install
