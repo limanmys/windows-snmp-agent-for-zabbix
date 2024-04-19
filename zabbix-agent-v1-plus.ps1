@@ -14,12 +14,12 @@ if ($server -eq "<your-zabbix-server-ip-address>") {
 #Download address definitions
 $version = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.28/zabbix_agent-6.0.28-windows-amd64-openssl.zip"
 $vRedistInstallerUrl = "https://aka.ms/vs/16/release/vc_redist.x64.exe"
-$snmpwalk = 
+$snmpwalk=
 #Script path definitions
 $ping = "https://raw.githubusercontent.com/limanmys/zabbix-agent-slient/main/Scripts/ping-request.ps1"
 $snmpv2 = "https://raw.githubusercontent.com/limanmys/zabbix-agent-slient/main/Scripts/snmpv2-request.ps1"
 $snmpv3 = "https://raw.githubusercontent.com/limanmys/zabbix-agent-slient/main/Scripts/snmpv3-request.ps1"
-
+$snmpcheck=https://raw.githubusercontent.com/limanmys/zabbix-agent-slient/main/Scripts/snmpcheck.ps1
 $zabbixAgentDirectory = "C:\Program Files\zabbix-agent"
 
 # Create directory for scripts
