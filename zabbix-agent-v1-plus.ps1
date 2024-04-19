@@ -1,7 +1,5 @@
 $server = "<your-zabbix-server-ip-address>"
 
-$server = "<your-zabbix-server-ip-address>"
-
 # Check if the server variable has been properly configured.
 # If not, prompt the user to edit it before continuing.
 if ($server -eq "<your-zabbix-server-ip-address>") {
