@@ -73,9 +73,10 @@ BufferSend=5
 BufferSize=100
 MaxLinesPerSecond=20
 
-UserParameter=deren.ping[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\ping-request.ps1" $1
-UserParameter=deren.snmp[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\snmpv2-request.ps1" $1 $2 $3
-UserParameter=deren.snmpv3[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\snmpv3-request.ps1" $1 $2 $3 $4 $5 $6 $7
+UserParameter=csi.ping[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\ping-request.ps1" $1
+UserParameter=csi.snmp[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\snmpv2-request.ps1" $1 $2 $3
+UserParameter=csi.snmpcheck[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\snmpcheck.ps1" $1 $2 $3
+UserParameter=csi.snmpv3[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\snmpv3-request.ps1" $1 $2 $3 $4 $5 $6 $7
 '@
 
 Set-Content -Path "$zabbixAgentDirectory\conf\zabbix_agentd.conf" -Value $linesToAdd
