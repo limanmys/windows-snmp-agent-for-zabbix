@@ -40,7 +40,7 @@ Invoke-WebRequest -Uri $snmpv3 -OutFile "$zabbixAgentDirectory\Scripts\snmpv3-re
 
 
 # Update zabbix_agentd.conf
-(Get-Content -Path "$zabbixAgentDirectoryconf\zabbix_agentd.conf") | ForEach-Object {$_ -Replace '127.0.0.1', "$server"} | Set-Content -Path "$zabbixAgentDirectory\conf\zabbix_agentd.conf"
+(Get-Content -Path "$zabbixAgentDirectory\conf\zabbix_agentd.conf") | ForEach-Object {$_ -Replace '127.0.0.1', "$server"} | Set-Content -Path "$zabbixAgentDirectory\conf\zabbix_agentd.conf"
 
     
 $linesToAdd = @'
