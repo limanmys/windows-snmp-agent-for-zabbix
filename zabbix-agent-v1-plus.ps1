@@ -52,7 +52,7 @@ UserParameter=deren.snmpv3[*],powershell.exe -File "C:\Program Files\zabbix-agen
 Add-Content -Path "$zabbixAgentDirectoryconf\zabbix_agentd.conf" -Value $linesToAdd
 
 # Install and start Zabbix Agent
-& "$zabbixAgentDirectory\bin\zabbix_agentd.exe" --config "$zabbixAgentDirectoryconf\zabbix_agentd.conf" --install
+& "$zabbixAgentDirectory\bin\zabbix_agentd.exe" --config "$zabbixAgentDirectory\conf\zabbix_agentd.conf" --install
 New-NetFirewallRule -DisplayName "Zabbix Agent Rule" -Direction Inbound -LocalPort 10050 -Protocol TCP -Action Allow
 
 & "$zabbixAgentDirectory\bin\zabbix_agentd.exe" --start --config "$zabbixAgentDirectory\conf\zabbix_agentd.conf"
