@@ -19,7 +19,7 @@ $snmpwalkDownloadUrl = "https://github.com/limanmys/zabbix-agent-slient/releases
 $ping = "https://raw.githubusercontent.com/limanmys/zabbix-agent-slient/main/Scripts/ping-request.ps1"
 $snmpv2 = "https://raw.githubusercontent.com/limanmys/zabbix-agent-slient/main/Scripts/snmpv2-request.ps1"
 $snmpv3 = "https://raw.githubusercontent.com/limanmys/zabbix-agent-slient/main/Scripts/snmpv3-request.ps1"
-$snmpcheck=https://raw.githubusercontent.com/limanmys/zabbix-agent-slient/main/Scripts/snmpcheck.ps1
+$snmpcheck="https://raw.githubusercontent.com/limanmys/zabbix-agent-slient/main/Scripts/snmpcheck.ps1"
 $zabbixAgentDirectory = "C:\Program Files\zabbix-agent"
 
 # Create directory for scripts
