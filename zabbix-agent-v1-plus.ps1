@@ -49,7 +49,7 @@ Unzip "$zabbixAgentDirectory\zabbix.zip" "$zabbixAgentDirectory"
 Invoke-WebRequest -Uri $ping -OutFile "$zabbixAgentDirectory\Scripts\ping-request.ps1"
 Invoke-WebRequest -Uri $snmpv2 -OutFile "$zabbixAgentDirectory\Scripts\snmpv2-request.ps1"
 Invoke-WebRequest -Uri $snmpv3 -OutFile "$zabbixAgentDirectory\Scripts\snmpv3-request.ps1"
-Invoke-WebRequest -Uri $snmpv3 -OutFile "$zabbixAgentDirectory\Scripts\snmpcheck.ps1"
+Invoke-WebRequest -Uri $snmpcheck -OutFile "$zabbixAgentDirectory\Scripts\snmpcheck.ps1"
 
 
 # Update zabbix_agentd.conf
