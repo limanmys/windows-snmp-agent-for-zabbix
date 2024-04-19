@@ -1,5 +1,18 @@
 $server = "<your-zabbix-server-ip-address>"
 
+$server = "<your-zabbix-server-ip-address>"
+
+# Check if the server variable has been properly configured.
+# If not, prompt the user to edit it before continuing.
+if ($server -eq "<your-zabbix-server-ip-address>") {
+    Write-Host "Please edit the Zabbix server IP address. The script will not proceed and editing is mandatory."
+
+    # Script execution should halt here or any other necessary action can be taken.
+    exit # Terminates the script execution.
+}
+
+# Continue with the rest of the code...
+
 #Download address definitions
 $version = "https://cdn.zabbix.com/zabbix/binaries/stable/6.0/6.0.28/zabbix_agent-6.0.28-windows-amd64-openssl.zip"
 $vRedistInstallerUrl = "https://aka.ms/vs/16/release/vc_redist.x64.exe"
@@ -60,9 +73,9 @@ BufferSend=5
 BufferSize=100
 MaxLinesPerSecond=20
 
-UserParameter=csi.ping[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\ping-request.ps1" $1
-UserParameter=csi.snmp[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\snmpv2-request.ps1" $1 $2 $3
-UserParameter=csi.snmpv3[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\snmpv3-request.ps1" $1 $2 $3 $4 $5 $6 $7
+UserParameter=deren.ping[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\ping-request.ps1" $1
+UserParameter=deren.snmp[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\snmpv2-request.ps1" $1 $2 $3
+UserParameter=deren.snmpv3[*],powershell.exe -File "C:\Program Files\zabbix-agent\Scripts\snmpv3-request.ps1" $1 $2 $3 $4 $5 $6 $7
 '@
 
 Set-Content -Path "$zabbixAgentDirectory\conf\zabbix_agentd.conf" -Value $linesToAdd
