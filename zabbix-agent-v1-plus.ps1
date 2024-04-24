@@ -86,7 +86,7 @@ Set-Content -Path "$zabbixAgentDirectory\conf\zabbix_agentd.conf" -Value $linesT
 & "$zabbixAgentDirectory\bin\zabbix_agentd.exe" --config "$zabbixAgentDirectory\conf\zabbix_agentd.conf" --install
 New-NetFirewallRule -DisplayName "Zabbix Agent Rule" -Direction Inbound -LocalPort 10050 -Protocol TCP -Action Allow
 
-& "$zabbixAgentDirectory\bin\zabbix_agentd.exe" --start --config "$zabbixAgentDirectory\conf\zabbix_agentd.conf"
+
 
 # Install snmpwalk
 
@@ -112,6 +112,8 @@ if ($currentPath -notlike "*$snmpwalkDirectory*") {
     [Environment]::SetEnvironmentVariable("Path", "$currentPath;$snmpwalkDirectory", "Machine")
 
     Write-Host "Directory added to PATH. You can now use 'snmpwalk' command."
+    & "$zabbixAgentDirectory\bin\zabbix_agentd.exe" --start --config "$zabbixAgentDirectory\conf\zabbix_agentd.conf"
 } else {
     Write-Host "Directory is already in PATH."
+    & "$zabbixAgentDirectory\bin\zabbix_agentd.exe" --start --config "$zabbixAgentDirectory\conf\zabbix_agentd.conf"
 }
