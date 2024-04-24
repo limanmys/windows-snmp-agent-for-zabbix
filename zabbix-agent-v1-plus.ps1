@@ -112,8 +112,8 @@ if ($currentPath -notlike "*$snmpwalkDirectory*") {
     [Environment]::SetEnvironmentVariable("Path", "$currentPath;$snmpwalkDirectory", "Machine")
 
     Write-Host "Directory added to PATH. You can now use 'snmpwalk' command."
-    & "$zabbixAgentDirectory\bin\zabbix_agentd.exe" --start --config "$zabbixAgentDirectory\conf\zabbix_agentd.conf"
 } else {
     Write-Host "Directory is already in PATH."
-    & "$zabbixAgentDirectory\bin\zabbix_agentd.exe" --start --config "$zabbixAgentDirectory\conf\zabbix_agentd.conf"
+    
 }
+& "$zabbixAgentDirectory\bin\zabbix_agentd.exe" --start --config "$zabbixAgentDirectory\conf\zabbix_agentd.conf"
