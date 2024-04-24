@@ -31,9 +31,18 @@ c:\zabbix-agent\bin\zabbix_agentd.exe --uninstall --config c:\zabbix-agent\conf\
 
 
 
-**One Line Installation**
+**One Line Online Installation**
 
 Downloads, adds firewall rule and installs Zabbix Agnet 
 ``` powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force; Invoke-WebRequest -Uri "https://raw.githubusercontent.com/dogukaneren/Zabbix-Agent-Slient-Installer/main/zabbix-agent-v1-plus.ps1" -OutFile "zabbix-agent-v1-plus.ps1"; .\zabbix-agent-v1-plus.ps1
 ```
+
+**Offline Instalation**
+Download zip file and offline powershell sciprt on Releases tab. Then run the following on downloaded path.
+
+``` powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force; .\zabbix-agent-offline-plus.ps1
+```
+
+Note: zip and script must be on same directory.
