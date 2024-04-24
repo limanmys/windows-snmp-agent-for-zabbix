@@ -1,4 +1,4 @@
-# Zabbix-Agent-Slient-Installer
+# Windows SNMP Agent for Zabbix
 Windows Zabbix Agent Installer Sliently
 
 Run PoweShell Administrator permissions then just run the scripts
