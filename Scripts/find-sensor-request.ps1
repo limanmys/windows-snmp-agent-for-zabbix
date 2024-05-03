@@ -1,4 +1,4 @@
-$directoryPath = "C:\Users\deren\Desktop"
+$directoryPath = "C:\Path"
 
 # Get all txt files in the directory
 $txtFiles = Get-ChildItem -Path $directoryPath -Filter "*.txt"
