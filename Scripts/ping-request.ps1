@@ -4,7 +4,7 @@ $pingResult = Test-Connection -ComputerName $ipAddress -Count 1 -Quiet
 
 # Ping sonucuna göre durumu belirle
 if ($pingResult) {
-    Write-Output "UP"
+    Write-Output 1
 } else {
-    Write-Output "DOWN"
+    Write-Output 0
 }

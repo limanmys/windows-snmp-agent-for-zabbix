@@ -1,0 +1,130 @@
+zabbix_export:
+  version: '6.0'
+  date: '2024-05-14T05:00:42Z'
+  groups:
+    - uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    - uuid: e6f2743154b346cea59a681601a3a28f
+      template: 'Camera Server Item by SNMP Template'
+      name: 'Camera Server Item by SNMP Template'
+      groups:
+        - name: Templates
+      items:
+        - uuid: 4c92d6399b8f4fe3a7f413b61774f20e
+          name: 'Sensor State'
+          key: 'csi.lightsensorstate[{$IP},{$STATE}]'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: MATCHES_REGEX
+              parameters:
+                - '[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+'
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '-'
+          triggers:
+            - uuid: 733e9dc0e30f419498e4e789e3cf6c11
+              expression: 'repeat(change(/Camera Server Item by SNMP Template/csi.lightsensorstate[{$IP},{$STATE}]),5)=0'
+              name: test
+              status: DISABLED
+        - uuid: 1f1ec7e915be4e6aad491db1df7b2a30
+          name: 'Camera Server Item ICMP Ping Control'
+          key: 'csi.ping[{$IP}]'
+          preprocessing:
+            - type: CHECK_NOT_SUPPORTED
+              parameters:
+                - ''
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '0'
+        - uuid: 88bd55666bc6462ca557cc81e345650b
+          name: 'Camera Server Item by SNMP - SNMP Availability'
+          key: 'csi.snmpcheck[{$SNMP_COMMUNITY},{$IP},iso.3.6.1.2.1.1.8.0]'
+          trends: '0'
+          status: DISABLED
+          value_type: TEXT
+          preprocessing:
+            - type: REGEX
+              parameters:
+                - '-'
+                - '0'
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '1'
+        - uuid: f24a46e544ff47b9acab546faad81925
+          name: 'Camera Server Item by SNMP - About Owner'
+          key: 'csi.snmp[{$SNMP_COMMUNITY},{$IP},1.3.6.1.2.1.1.4.0]'
+          trends: '0'
+          status: DISABLED
+          value_type: TEXT
+        - uuid: 1a51add7df2b4af79dc3daffaed95ef9
+          name: 'Camera Server Item by SNMP - Hostname'
+          key: 'csi.snmp[{$SNMP_COMMUNITY},{$IP},1.3.6.1.2.1.1.5.0]'
+          trends: '0'
+          status: DISABLED
+          value_type: TEXT
+        - uuid: 4c475c4e6af844748cf9835412755b0a
+          name: 'Camera Server Item by SNMP - Device Type'
+          key: 'csi.snmp[{$SNMP_COMMUNITY},{$IP},1.3.6.1.4.1.39165.1.1.0]'
+          trends: '0'
+          status: DISABLED
+          value_type: TEXT
+        - uuid: cfbf7c648533453d80f33a1b6ac7a5bc
+          name: 'Camera Server Item by SNMP - Serial Number'
+          key: 'csi.snmp[{$SNMP_COMMUNITY},{$IP},1.3.6.1.4.1.39165.1.3.0]'
+          trends: '0'
+          status: DISABLED
+          value_type: TEXT
+        - uuid: 5e95b0c17b044c56a96088d660767a32
+          name: 'Camera Server Item by SNMP - Software Version'
+          key: 'csi.snmp[{$SNMP_COMMUNITY},{$IP},1.3.6.1.4.1.39165.1.4.0]'
+          trends: '0'
+          status: DISABLED
+          value_type: TEXT
+        - uuid: 04cb8c57fabb49aabc2ebc3d1e4fa857
+          name: 'Camera Server Item by SNMP - Version'
+          key: 'csi.snmp[{$SNMP_COMMUNITY},{$IP},1.3.6.1.4.1.39165.1.5.0]'
+          trends: '0'
+          status: DISABLED
+          value_type: TEXT
+        - uuid: 4a0f21e3d2024e908aa6f0f9fb1d1037
+          name: 'Camera Server Item by SNMP -  Mac Address'
+          key: 'csi.snmp[{$SNMP_COMMUNITY},{$IP},1.3.6.1.4.1.39165.1.12.0]'
+          trends: '0'
+          status: DISABLED
+          value_type: TEXT
+        - uuid: d3d5a426badf4f9ab5a7d802a6971f8d
+          name: 'Camera Server Item by SNMP - Dynamic IP Address'
+          key: 'csi.snmp[{$SNMP_COMMUNITY},{$IP},1.3.6.1.4.1.39165.1.13.0]'
+          trends: '0'
+          status: DISABLED
+          value_type: TEXT
+        - uuid: e5c30ae54e1d4b9db6611245da2a3b87
+          name: 'Camera Server Item by SNMP - Dynamic Netmask'
+          key: 'csi.snmp[{$SNMP_COMMUNITY},{$IP},1.3.6.1.4.1.39165.1.14.0]'
+          trends: '0'
+          status: DISABLED
+          value_type: TEXT
+        - uuid: b777c46387814b5a87ee1105fd57b926
+          name: 'Camera Server Item by SNMP -  Dynamic Gateway'
+          key: 'csi.snmp[{$SNMP_COMMUNITY},{$IP},1.3.6.1.4.1.39165.1.15.0]'
+          trends: '0'
+          status: DISABLED
+          value_type: TEXT
+        - uuid: 16be5112d86f4e5383a8de12750c5d01
+          name: 'Camera Server Item by SNMP - Boot Device'
+          key: 'csi.snmp[{$SNMP_COMMUNITY},{$IP},iso.3.6.1.2.1.25.1.4]'
+          trends: '0'
+          status: DISABLED
+          value_type: TEXT
+        - uuid: 426afae398fb45be82fcd4d9f86941ea
+          name: 'Camera Server Item ICMP Ping'
+          type: CALCULATED
+          key: icmpping
+          params: 'last(//csi.ping[{$IP}])'
+          triggers:
+            - uuid: fbbcfe761bc8449fbb8308b8319f9f10
+              expression: 'max(/Camera Server Item by SNMP Template/icmpping,#3)=0'
+              name: 'Unavailable by ICMP ping'
+              priority: HIGH
+              description: |
+                Last value: {ITEM.LASTVALUE1}.
+                Last three attempts returned timeout.  Please check device connectivity.

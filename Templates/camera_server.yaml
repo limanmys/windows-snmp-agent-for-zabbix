@@ -1,0 +1,62 @@
+zabbix_export:
+  version: '6.0'
+  date: '2024-05-14T04:52:21Z'
+  groups:
+    - uuid: f2481361f99448eea617b7b1d4765566
+      name: 'Discovered hosts'
+    - uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    - uuid: 88d16660551f4c429478e00e21c50220
+      template: 'Camera Server'
+      name: 'Camera Server'
+      groups:
+        - name: Templates
+      items:
+        - uuid: c85e9e0419fd4e80b10aca8b2f040b71
+          name: 'Camera Server Item by SNMP- Zabbix SNMP Availability'
+          key: 'zabbix[host,snmp,available]'
+          trends: '0'
+          status: DISABLED
+          value_type: TEXT
+      discovery_rules:
+        - uuid: f6df13059c58428fa4f9675803f7c89b
+          name: Camera
+          key: csi.camera
+          item_prototypes:
+            - uuid: 129986d60e0f46febafe029bb01c6774
+              name: 'Camera - {#IP}'
+              key: 'csi.node.camera[{#IP}]'
+          host_prototypes:
+            - uuid: f944664daa084db0bdb93a32d91bf3a4
+              host: '{#HOST_HOSTNAME}-Camera-{#IP}'
+              name: '{#HOST_HOSTNAME}-Camera-{#IP}'
+              group_links:
+                - group:
+                    name: 'Discovered hosts'
+              templates:
+                - name: 'Camera Server Item by SNMP Template'
+              macros:
+                - macro: '{$IP}'
+                  value: '{#IP}'
+        - uuid: a2120565b70549fe904395775350adfc
+          name: 'Light Sensor'
+          key: csi.lightsensor
+          item_prototypes:
+            - uuid: 1eed8a52e2624587a54fe66f2d6d8f83
+              name: 'Light Sensor - {#IP}'
+              key: 'csi.node.lightsensor[{#IP}]'
+          host_prototypes:
+            - uuid: cfbd33e200164895a9b738429a253d44
+              host: '{#HOST_HOSTNAME}-Light Sensor-{#IP}'
+              name: '{#HOST_HOSTNAME}-Light Sensor-{#IP}'
+              group_links:
+                - group:
+                    name: 'Discovered hosts'
+              templates:
+                - name: 'Camera Server Item by SNMP Template'
+              macros:
+                - macro: '{$IP}'
+                  value: '{#IP}'
+                - macro: '{$STATE}'
+                  value: '{#STATE}'
