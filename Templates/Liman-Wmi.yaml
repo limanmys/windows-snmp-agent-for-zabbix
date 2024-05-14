@@ -1,0 +1,69 @@
+zabbix_export:
+  version: '6.0'
+  date: '2024-05-14T05:58:40Z'
+  groups:
+    - uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    - uuid: f1377df30cf548e9bcf0bac2869be483
+      template: 'Liman MYS Wmi'
+      name: 'Liman MYS Wmi'
+      description: 'Liman MYS Wmi Template'
+      groups:
+        - name: Templates
+      items:
+        - uuid: a32ad461b99146189084a5779a440100
+          name: 'ICMP Ping Response Time'
+          type: DEPENDENT
+          key: csi.wmi.responsetime
+          delay: '0'
+          value_type: FLOAT
+          units: s
+          description: 'ICMP Ping Response Time via wmi'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $..ResponseTime.first()
+              error_handler: DISCARD_VALUE
+            - type: MULTIPLIER
+              parameters:
+                - '0.001'
+            - type: IN_RANGE
+              parameters:
+                - '0.001'
+                - ''
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '0.001'
+          master_item:
+            key: 'wmi.getall[root\cimv2,"SELECT PrimaryAddressResolutionStatus, StatusCode, ResponseTime FROM Win32_PingStatus WHERE Address=''{$IP}'' AND Timeout=2000"]'
+        - uuid: 78964a3434d044d4bb11712bb21434c7
+          name: 'ICMP Ping'
+          type: DEPENDENT
+          key: icmpping
+          delay: '0'
+          description: 'ICMP Ping via wmi'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $..StatusCode.first()
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '1'
+            - type: JAVASCRIPT
+              parameters:
+                - 'if (value == 0) {return(1)} else {return(0)}'
+          master_item:
+            key: 'wmi.getall[root\cimv2,"SELECT PrimaryAddressResolutionStatus, StatusCode, ResponseTime FROM Win32_PingStatus WHERE Address=''{$IP}'' AND Timeout=2000"]'
+        - uuid: f662cd11fd21444caf8b374100d19e04
+          name: 'Port Check'
+          key: 'net.tcp.port[{$IP},{$PORT}]'
+        - uuid: 40787472000c4995b9f93db7b8671c74
+          name: 'Port Check Perf'
+          key: 'net.tcp.service.perf[tcp,{$IP},{$PORT}]'
+          value_type: FLOAT
+          units: s
+        - uuid: 37f31358c8814ed69f144596c65aae64
+          name: 'ICMP Ping Result Array'
+          key: 'wmi.getall[root\cimv2,"SELECT PrimaryAddressResolutionStatus, StatusCode, ResponseTime FROM Win32_PingStatus WHERE Address=''{$IP}'' AND Timeout=2000"]'
+          trends: '0'
+          value_type: TEXT
+          description: 'Wmi request for Ping related items'
