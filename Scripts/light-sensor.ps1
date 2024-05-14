@@ -1,6 +1,9 @@
  param (
-    [string]$ipAddress,
-    [string]$stateAddress
+    [string]$ip,
+    [string]$port
 )
 
-Invoke-RestMethod http://$ipAddress/$stateAddress -TimeoutSec 3
+$url = "http://$ip/$port"
+$webClient = New-Object System.Net.WebClient
+$content = $webClient.DownloadString($url)
+Write-Output $content
