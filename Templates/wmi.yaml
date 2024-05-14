@@ -1,24 +1,17 @@
 zabbix_export:
   version: '6.0'
-  date: '2024-05-14T12:16:49Z'
+  date: '2024-05-14T05:30:11Z'
   groups:
-    -
+    - uuid: 7df96b18c230490a9a0a9e2307226338
       name: Templates
   templates:
-    -
-      template: 'Liman MYS wmi template'
-      name: 'Liman MYS wmi template for windows agent'
-      description: |
+    - uuid: b9cf7337aa3d4f85b040c960b26f53d5
+      template: 'Liman MYS Wmi Template'
+      name: 'Liman MYS Wmi Template'
       groups:
-        -
-          name: Templates
-      applications:
-        -
-          name: 'ICMP ping'
-        -
-          name: 'Zabbix raw items'
+        - name: Templates
       discovery_rules:
-        -
+        - uuid: d8f9872c435644f59ffcd0ef58591d1c
           name: 'ICMP ping discovery'
           type: SCRIPT
           key: icmpping.discovery
@@ -26,75 +19,22 @@ zabbix_export:
           params: 'return ''[''+''{$PING_LIST}''.replace(/([^,]+)/g,''{"{#ADDR}":"$1"}'')+'']'''
           lifetime: 1w
           item_prototypes:
-            -
-              name: 'ping status {#ADDR}'
-              type: DEPENDENT
-              key: 'ping.status[{#ADDR}]'
-              delay: '0'
-              applications:
-                -
-                  name: 'ICMP ping'
-              valuemap:
-                name: 'Service state'
-              preprocessing:
-                -
-                  type: JSONPATH
-                  parameters:
-                    - $..StatusCode.first()
-                  error_handler: CUSTOM_VALUE
-                  error_handler_params: '1'
-                -
-                  type: JAVASCRIPT
-                  parameters:
-                    - |
-                      if (value == 0) {return(1)} else {return(0)}
-                      
-              master_item:
-                key: 'wmi.getall[root\cimv2,"SELECT PrimaryAddressResolutionStatus, StatusCode, ResponseTime FROM Win32_PingStatus WHERE Address=''{#ADDR}'' AND Timeout=2000"]'
-            -
-              name: 'resolution status {#ADDR}'
-              type: DEPENDENT
-              key: 'resolution.status[{#ADDR}]'
-              delay: '0'
-              discover: NO_DISCOVER
-              applications:
-                -
-                  name: 'ICMP ping'
-              preprocessing:
-                -
-                  type: JSONPATH
-                  parameters:
-                    - $..PrimaryAddressResolutionStatus.first()
-                -
-                  type: JAVASCRIPT
-                  parameters:
-                    - |
-                      if (value == 0) {return(1)} else {return(0)}
-                      
-              master_item:
-                key: 'wmi.getall[root\cimv2,"SELECT PrimaryAddressResolutionStatus, StatusCode, ResponseTime FROM Win32_PingStatus WHERE Address=''{#ADDR}'' AND Timeout=2000"]'
-            -
+            - uuid: 058ddd5521d14cb7af6fa6bc2b67c91f
               name: 'response time {#ADDR}'
               type: DEPENDENT
-              key: 'response.time[{#ADDR}]'
+              key: csi.wmi.responsetime
               delay: '0'
               value_type: FLOAT
               units: s
-              applications:
-                -
-                  name: 'ICMP ping'
               preprocessing:
-                -
-                  type: JSONPATH
+                - type: JSONPATH
                   parameters:
                     - $..ResponseTime.first()
                   error_handler: DISCARD_VALUE
-                -
-                  type: MULTIPLIER
+                - type: MULTIPLIER
                   parameters:
                     - '0.001'
-                -
-                  type: IN_RANGE
+                - type: IN_RANGE
                   parameters:
                     - '0.001'
                     - ''
@@ -102,43 +42,79 @@ zabbix_export:
                   error_handler_params: '0.001'
               master_item:
                 key: 'wmi.getall[root\cimv2,"SELECT PrimaryAddressResolutionStatus, StatusCode, ResponseTime FROM Win32_PingStatus WHERE Address=''{#ADDR}'' AND Timeout=2000"]'
-            -
+              tags:
+                - tag: Application
+                  value: 'ICMP ping'
+            - uuid: ff1725a7cb884e289554d69868318b9e
+              name: 'resolution status {#ADDR}'
+              type: DEPENDENT
+              key: csi.wmi.status
+              delay: '0'
+              discover: NO_DISCOVER
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $..PrimaryAddressResolutionStatus.first()
+                - type: JAVASCRIPT
+                  parameters:
+                    - 'if (value == 0) {return(1)} else {return(0)}'
+              master_item:
+                key: 'wmi.getall[root\cimv2,"SELECT PrimaryAddressResolutionStatus, StatusCode, ResponseTime FROM Win32_PingStatus WHERE Address=''{#ADDR}'' AND Timeout=2000"]'
+              tags:
+                - tag: Application
+                  value: 'ICMP ping'
+            - uuid: c5a0a82b9e92436da3ff977f345d272b
+              name: 'ICMP Ping'
+              type: DEPENDENT
+              key: icmpping
+              delay: '0'
+              valuemap:
+                name: 'Service state'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $..StatusCode.first()
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '1'
+                - type: JAVASCRIPT
+                  parameters:
+                    - 'if (value == 0) {return(1)} else {return(0)}'
+              master_item:
+                key: 'wmi.getall[root\cimv2,"SELECT PrimaryAddressResolutionStatus, StatusCode, ResponseTime FROM Win32_PingStatus WHERE Address=''{#ADDR}'' AND Timeout=2000"]'
+              tags:
+                - tag: Application
+                  value: 'ICMP ping'
+            - uuid: f629234dd04e4c489b66ba99f4634bf9
               name: 'get icmp ping {#ADDR}'
               key: 'wmi.getall[root\cimv2,"SELECT PrimaryAddressResolutionStatus, StatusCode, ResponseTime FROM Win32_PingStatus WHERE Address=''{#ADDR}'' AND Timeout=2000"]'
               history: '0'
               trends: '0'
               value_type: TEXT
-              applications:
-                -
-                  name: 'Zabbix raw items'
+              tags:
+                - tag: Application
+                  value: 'Zabbix raw items'
           overrides:
-            -
-              name: 'resolution status for DNS names'
+            - name: 'resolution status for DNS names'
               step: '1'
               filter:
                 conditions:
-                  -
-                    macro: '{#ADDR}'
+                  - macro: '{#ADDR}'
                     value: '.*\.\D+$'
                     formulaid: A
               operations:
-                -
-                  operationobject: ITEM_PROTOTYPE
+                - operationobject: ITEM_PROTOTYPE
                   operator: LIKE
                   value: 'resolution status'
                   discover: DISCOVER
       macros:
-        -
-          macro: '{$PING_LIST}'
-          value: '127.0.0.1'
+        - macro: '{$PING_LIST}'
+          value: 127.0.0.1
           description: sample
-  value_maps:
-    -
-      name: 'Service state'
-      mappings:
-        -
-          value: '0'
-          newvalue: Down
-        -
-          value: '1'
-          newvalue: Up
+      valuemaps:
+        - uuid: 10649f8d0f49482ea3676090a9ca70d4
+          name: 'Service state'
+          mappings:
+            - value: '0'
+              newvalue: Down
+            - value: '1'
+              newvalue: Up
