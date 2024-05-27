@@ -1,0 +1,16 @@
+zabbix_export:
+  version: '6.0'
+  date: '2024-05-27T13:16:21Z'
+  groups:
+    - uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    - uuid: 8f36542d2b654a0dbdc4a822abf15de6
+      template: 'Gige Camera Discover'
+      name: 'Gige Camera Discover'
+      groups:
+        - name: Templates
+      discovery_rules:
+        - uuid: 0958353f007d48f1b289dbab38aa1305
+          name: 'Camera Discover'
+          key: gige.discover

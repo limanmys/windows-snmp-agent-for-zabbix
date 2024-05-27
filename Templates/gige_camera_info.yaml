@@ -1,0 +1,57 @@
+zabbix_export:
+  version: '6.0'
+  date: '2024-05-27T13:16:26Z'
+  groups:
+    - uuid: 7df96b18c230490a9a0a9e2307226338
+      name: Templates
+  templates:
+    - uuid: ee70e8fba87a478399e04cc53eba55ab
+      template: 'Gige Camera Info'
+      name: 'Gige Camera Info'
+      groups:
+        - name: Templates
+      items:
+        - uuid: fca5af5e95874201b7180ede5e33be6f
+          name: DeviceEthAddress
+          type: DEPENDENT
+          key: gige.info.DeviceEthAddress
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.DeviceEthAddress
+          master_item:
+            key: 'gige.info[{$UID}]'
+        - uuid: 43879bfa061649c3b2967114b920413d
+          name: StreamBytesPerSecond
+          type: DEPENDENT
+          key: gige.info.StreamBytesPerSecond
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.StreamBytesPerSecond
+          master_item:
+            key: 'gige.info[{$UID}]'
+        - uuid: d5770580961f49849fc1d85c58efae83
+          name: UniqueID
+          type: DEPENDENT
+          key: gige.info.UniqueID
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.UniqueID
+          master_item:
+            key: 'gige.info[{$UID}]'
+        - uuid: 485a41c863e142f98efdc302a8dcbcf9
+          name: 'Gige - Info'
+          key: 'gige.info[{$UID}]'
+          trends: '0'
+          value_type: TEXT
