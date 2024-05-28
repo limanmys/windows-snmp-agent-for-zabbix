@@ -1,6 +1,6 @@
 zabbix_export:
   version: '6.0'
-  date: '2024-05-14T05:00:42Z'
+  date: '2024-05-28T08:00:37Z'
   groups:
     - uuid: 7df96b18c230490a9a0a9e2307226338
       name: Templates
@@ -15,6 +15,7 @@ zabbix_export:
           name: 'Sensor State'
           key: 'csi.lightsensorstate[{$IP},{$STATE}]'
           trends: '0'
+          status: DISABLED
           value_type: TEXT
           preprocessing:
             - type: MATCHES_REGEX
@@ -22,20 +23,6 @@ zabbix_export:
                 - '[0-9]+,[0-9]+,[0-9]+,[0-9]+,[0-9]+'
               error_handler: CUSTOM_VALUE
               error_handler_params: '-'
-          triggers:
-            - uuid: 733e9dc0e30f419498e4e789e3cf6c11
-              expression: 'repeat(change(/Camera Server Item by SNMP Template/csi.lightsensorstate[{$IP},{$STATE}]),5)=0'
-              name: test
-              status: DISABLED
-        - uuid: 1f1ec7e915be4e6aad491db1df7b2a30
-          name: 'Camera Server Item ICMP Ping Control'
-          key: 'csi.ping[{$IP}]'
-          preprocessing:
-            - type: CHECK_NOT_SUPPORTED
-              parameters:
-                - ''
-              error_handler: CUSTOM_VALUE
-              error_handler_params: '0'
         - uuid: 88bd55666bc6462ca557cc81e345650b
           name: 'Camera Server Item by SNMP - SNMP Availability'
           key: 'csi.snmpcheck[{$SNMP_COMMUNITY},{$IP},iso.3.6.1.2.1.1.8.0]'
@@ -115,16 +102,91 @@ zabbix_export:
           trends: '0'
           status: DISABLED
           value_type: TEXT
-        - uuid: 426afae398fb45be82fcd4d9f86941ea
-          name: 'Camera Server Item ICMP Ping'
-          type: CALCULATED
+        - uuid: bf22da2e35e94a41b29ac93b28703572
+          name: 'ICMP Ping Response Time'
+          type: DEPENDENT
+          key: csi.wmi.responsetime
+          delay: '0'
+          value_type: FLOAT
+          units: s
+          description: 'ICMP Ping Response Time via wmi'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $..ResponseTime.first()
+              error_handler: DISCARD_VALUE
+            - type: MULTIPLIER
+              parameters:
+                - '0.001'
+            - type: IN_RANGE
+              parameters:
+                - '0.001'
+                - ''
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '0.001'
+          master_item:
+            key: 'wmi.getall[root\cimv2,"SELECT PrimaryAddressResolutionStatus, StatusCode, ResponseTime FROM Win32_PingStatus WHERE Address=''{$IP}'' AND Timeout=2000"]'
+        - uuid: 0f0193ddd2014e1ea8112a05b3978384
+          name: 'ICMP Ping'
+          type: DEPENDENT
           key: icmpping
-          params: 'last(//csi.ping[{$IP}])'
+          delay: '0'
+          description: 'ICMP Ping via wmi'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $..StatusCode.first()
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '1'
+            - type: JAVASCRIPT
+              parameters:
+                - 'if (value == 0) {return(1)} else {return(0)}'
+          master_item:
+            key: 'wmi.getall[root\cimv2,"SELECT PrimaryAddressResolutionStatus, StatusCode, ResponseTime FROM Win32_PingStatus WHERE Address=''{$IP}'' AND Timeout=2000"]'
           triggers:
-            - uuid: fbbcfe761bc8449fbb8308b8319f9f10
-              expression: 'max(/Camera Server Item by SNMP Template/icmpping,#3)=0'
-              name: 'Unavailable by ICMP ping'
+            - uuid: 7862f836dab44f3596e9574fa22a66ed
+              expression: 'last(/Camera Server Item by SNMP Template/icmpping)=0'
+              name: 'IP Access Failure on ICMP Ping Failure'
               priority: HIGH
-              description: |
-                Last value: {ITEM.LASTVALUE1}.
-                Last three attempts returned timeout.  Please check device connectivity.
+        - uuid: 1cade69ff8f844a6b710b365ff25fc2e
+          name: 'Port Check'
+          key: 'net.tcp.port[{$IP},{$PORT}]'
+          triggers:
+            - uuid: 6bf23e5faa2f4dff9204b7e522049136
+              expression: 'last(/Camera Server Item by SNMP Template/net.tcp.port[{$IP},{$PORT}])=0'
+              name: 'HTTP Server Down'
+              priority: DISASTER
+            - uuid: b16330387cdb4e909a811bc92a6e1503
+              expression: 'last(/Camera Server Item by SNMP Template/net.tcp.port[{$IP},{$PORT}])=0'
+              name: 'Port Check Failure'
+              priority: HIGH
+        - uuid: b112b01ad3d941e1b2bc780dfbbc7091
+          name: 'Port Check Perf'
+          key: 'net.tcp.service.perf[tcp,{$IP},{$PORT}]'
+          value_type: FLOAT
+          units: s
+        - uuid: c146e984c1894d37a6f9839c6512f1cd
+          name: 'Sensor State With Web'
+          key: 'web.page.get[{$IP},{$STATE},{$PORT}]'
+          delay: 10m
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  value = value.match(/((\d+\s*,\s*)+\d+)/g);
+                  value = value[0].replace(/\s/g, "");
+                  
+                  return typeof value !== typeof undefined ? value : "undefined";
+          triggers:
+            - uuid: 6ef3e59a0eb8403d9d7c895a65b5eb65
+              expression: 'repeat(change(/Camera Server Item by SNMP Template/web.page.get[{$IP},{$STATE},{$PORT}]),5)=0'
+              name: 'Camera Data Error Due to Unchanged Sensor State With Web'
+              priority: DISASTER
+        - uuid: 1dedfbe96cce473c946891ce880e9d7b
+          name: 'ICMP Ping Result Array'
+          key: 'wmi.getall[root\cimv2,"SELECT PrimaryAddressResolutionStatus, StatusCode, ResponseTime FROM Win32_PingStatus WHERE Address=''{$IP}'' AND Timeout=2000"]'
+          trends: '0'
+          value_type: TEXT
+          description: 'Wmi request for Ping related items'
