@@ -1,6 +1,6 @@
 zabbix_export:
   version: '6.0'
-  date: '2024-05-27T13:16:26Z'
+  date: '2024-05-28T08:11:58Z'
   groups:
     - uuid: 7df96b18c230490a9a0a9e2307226338
       name: Templates
@@ -11,6 +11,30 @@ zabbix_export:
       groups:
         - name: Templates
       items:
+        - uuid: 63410efe27ee472b9ce876fb92471b89
+          name: 'ICMP Ping Response Time'
+          type: DEPENDENT
+          key: csi.wmi.responsetime
+          delay: '0'
+          value_type: FLOAT
+          units: s
+          description: 'ICMP Ping Response Time via wmi'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $..ResponseTime.first()
+              error_handler: DISCARD_VALUE
+            - type: MULTIPLIER
+              parameters:
+                - '0.001'
+            - type: IN_RANGE
+              parameters:
+                - '0.001'
+                - ''
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '0.001'
+          master_item:
+            key: 'wmi.getall[root\cimv2,"SELECT PrimaryAddressResolutionStatus, StatusCode, ResponseTime FROM Win32_PingStatus WHERE Address=''{$IP}'' AND Timeout=2000"]'
         - uuid: fca5af5e95874201b7180ede5e33be6f
           name: DeviceEthAddress
           type: DEPENDENT
@@ -55,3 +79,31 @@ zabbix_export:
           key: 'gige.info[{$UID}]'
           trends: '0'
           value_type: TEXT
+        - uuid: cbec6cab80f14fe59231d5ac354f759a
+          name: 'ICMP Ping'
+          type: DEPENDENT
+          key: icmpping
+          delay: '0'
+          description: 'ICMP Ping via wmi'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $..StatusCode.first()
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '1'
+            - type: JAVASCRIPT
+              parameters:
+                - 'if (value == 0) {return(1)} else {return(0)}'
+          master_item:
+            key: 'wmi.getall[root\cimv2,"SELECT PrimaryAddressResolutionStatus, StatusCode, ResponseTime FROM Win32_PingStatus WHERE Address=''{$IP}'' AND Timeout=2000"]'
+          triggers:
+            - uuid: 00a7b8087036462b883dbf29994fa335
+              expression: 'last(/Gige Camera Info/icmpping)=0'
+              name: 'IP Access Failure on ICMP Ping Failure'
+              priority: HIGH
+        - uuid: b3bab40b62cb426c9948ceaa2b938a92
+          name: 'ICMP Ping Result Array'
+          key: 'wmi.getall[root\cimv2,"SELECT PrimaryAddressResolutionStatus, StatusCode, ResponseTime FROM Win32_PingStatus WHERE Address=''{$IP}'' AND Timeout=2000"]'
+          trends: '0'
+          value_type: TEXT
+          description: 'Wmi request for Ping related items'
